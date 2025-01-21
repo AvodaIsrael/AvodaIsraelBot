@@ -76,5 +76,8 @@ async def handle_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_data[user_id] = {"type": "employer", "answers": []}
         await update.message.reply_text(employer_questions[0])
     else:
-        await update.message.reply_text(
-            "Извините, я не понял ваш выбор.\n\nSorry, I didn't understand your choice.\n\nמצטער, לא הבנתי את הבחירה
+       await update.message.reply_text(
+    "Извините, я не понял ваш выбор.\n\n"
+    "Sorry, I didn't understand your choice.\n\n"
+    "מצטער, לא הבנתי את הבחירה שלך."
+)
