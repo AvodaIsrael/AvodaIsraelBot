@@ -1,30 +1,44 @@
-
-from telegram import Update
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 
-# Команда /start
+# Функция для старта
 async def start(update: Update, context):
-    await update.message.reply_text("Привет! Я AvodaIsraelBot. Чем могу помочь?")
+    # Кнопки для выбора
+    keyboard = [
+        ["🔎 Ищу работу", "📢 Предлагаю работу"],  # Русский
+        ["🔎 Looking for a job", "📢 Offering a job"],  # English
+        ["🔎 מחפש עבודה", "📢 מציע עבודה"]  # Hebrew
+    ]
+    reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True, resize_keyboard=True)
+    await update.message.reply_text(
+        "Выберите, пожалуйста, вариант:\n\n"
+        "Choose an option:\n\n"
+        "בחרו אפשרות:",
+        reply_markup=reply_markup
+    )
 
-# Команда /help
-async def help_command(update: Update, context):
-    await update.message.reply_text("Я могу ответить на твои вопросы. Напиши мне что-нибудь!")
+# Функция обработки ответа
+async def handle_response(update: Update, context):
+    text = update.message.text
 
-# Обработка всех текстовых сообщений
-async def handle_message(update: Update, context):
-    user_message = update.message.text
-    response = f"Ты написал: {user_message}"
-    await update.message.reply_text(response)
+    # Ответы на русском
+    if text in ["🔎 Ищу работу", "🔎 Looking for a job", "🔎 מחפש עבודה"]:
+        await update.message.reply_text("Вы ищете работу! Расскажите, какая работа вам нужна.")
+    elif text in ["📢 Предлагаю работу", "📢 Offering a job", "📢 מציע עבודה"]:
+        await update.message.reply_text("Вы предлагаете работу! Напишите, какую вакансию вы хотите опубликовать.")
+    else:
+        await update.message.reply_text(
+            "Извините, я не понял ваш выбор.\n\nSorry, I didn't understand your choice.\n\nמצטער, לא הבנתי את הבחירה שלך."
+        )
 
 # Основной код
 if __name__ == "__main__":
-    TOKEN = "8126776097:AAHZ_OK9Y_4LFyCMP_99c7Tc3uC8Wfd6v-w"  # Твой токен
-    app = ApplicationBuilder().token(TOKEN).build()
+    app = ApplicationBuilder().token("8126776097:AAHZ_OK9Y_4LFyCMP_99c7Tc3uC8Wfd6v-w").build()
 
-    # Добавляем обработчики команд
+    # Обработчик команды /start
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    # Обработчик текстовых сообщений
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_response))
 
     print("AvodaIsraelBot запущен!")
     app.run_polling()
